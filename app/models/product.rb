@@ -24,8 +24,29 @@ class Product < ApplicationRecord
   before_create :create_initial_price_history
   before_update :create_price_history_if_price_changed
   
+  # Instance methods
+  def price
+    current_price
+  end
+
+  def image
+    images.first
+  end
+
   def in_stock?
     stock_quantity > 0
+  end
+
+  def decrease_stock!(quantity)
+    update!(stock_quantity: stock_quantity - quantity)
+  end
+
+  def featured?
+    false # This can be implemented with a featured column later
+  end
+
+  def display_price
+    "$#{price.to_f}"
   end
   
   def can_add_to_cart?(quantity = 1)
