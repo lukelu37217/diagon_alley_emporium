@@ -53,7 +53,7 @@
             <p><strong>Total: $<%= total %></strong></p>
             
             <div class="d-grid gap-2">
-              <%= link_to "Proceed to Checkout", "#", class: "btn btn-primary" %>
+              <%= link_to "Proceed to Checkout", new_order_path, class: "btn btn-primary" %>
               <%= link_to "Continue Shopping", products_path, class: "btn btn-outline-secondary" %>
               <%= link_to "Clear Cart", clear_shopping_carts_path, method: :delete, 
                           confirm: "Clear entire cart?", 

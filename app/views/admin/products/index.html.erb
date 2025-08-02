@@ -1,2 +1,70 @@
-<h1>Admin::Products#index</h1>
-<p>Find me in app/views/admin/products/index.html.erb</p>
+<div class="container-fluid mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">Products Management</h2>
+    <%= link_to "Add New Product", new_admin_product_path, class: "btn btn-primary" %>
+  </div>
+
+  <div class="card shadow">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover">
+          <thead class="table-dark">
+            <tr>
+              <th>ID</th>
+              <th>Image</th>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% Product.includes(:category, images_attachments: :blob).each do |product| %>
+              <tr>
+                <td><%= product.id %></td>
+                <td>
+                  <% if product.images.attached? %>
+                    <%= image_tag product.images.first, class: "img-thumbnail", style: "width: 50px; height: 50px; object-fit: cover;" %>
+                  <% else %>
+                    <div class="bg-light d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                      <i class="fas fa-image text-muted"></i>
+                    </div>
+                  <% end %>
+                </td>
+                <td><%= product.name %></td>
+                <td>
+                  <span class="badge bg-secondary"><%= product.category.name %></span>
+                </td>
+                <td>$<%= product.current_price %></td>
+                <td>
+                  <% if product.stock_quantity > 0 %>
+                    <span class="badge bg-success"><%= product.stock_quantity %></span>
+                  <% else %>
+                    <span class="badge bg-danger">Out of Stock</span>
+                  <% end %>
+                </td>
+                <td>
+                  <% if product.is_active? %>
+                    <span class="badge bg-success">Active</span>
+                  <% else %>
+                    <span class="badge bg-danger">Inactive</span>
+                  <% end %>
+                </td>
+                <td>
+                  <div class="btn-group" role="group">
+                    <%= link_to "View", product_path(product), class: "btn btn-sm btn-outline-primary", target: "_blank" %>
+                    <%= link_to "Edit", edit_admin_product_path(product), class: "btn btn-sm btn-outline-secondary" %>
+                    <%= link_to "Delete", admin_product_path(product), method: :delete, 
+                        data: { confirm: "Are you sure?" }, class: "btn btn-sm btn-outline-danger" %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
