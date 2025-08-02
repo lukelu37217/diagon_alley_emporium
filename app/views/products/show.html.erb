@@ -35,7 +35,7 @@
         </div>
         
         <% if user_signed_in? %>
-          <%= form_with url: shopping_cart_items_path, method: :post, local: true do |form| %>
+          <%= form_with url: shopping_carts_path, method: :post, local: true do |form| %>
             <%= form.hidden_field :product_id, value: @product.id %>
             <div class="row align-items-end">
               <div class="col-md-3">
