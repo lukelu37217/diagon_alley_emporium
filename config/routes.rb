@@ -11,7 +11,12 @@ Rails.application.routes.draw do
   # Shopping cart routes
   resources :shopping_carts, except: [:show, :new, :edit] do
     member do
-      patch :update_quantity
+      patch :update_item
+      delete :remove_item
+    end
+    collection do
+      post :add_item
+      delete :clear
     end
   end
   
