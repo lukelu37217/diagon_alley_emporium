@@ -2,7 +2,7 @@ class ProductsController < ApplicationController
   before_action :set_product, only: [:show]
 
   def index
-    @products = Product.includes(:category, image_attachment: :blob).page(params[:page])
+    @products = Product.includes(:category, images_attachments: :blob).page(params[:page])
     @categories = Category.all
   end
 

@@ -6,7 +6,7 @@ class CategoriesController < ApplicationController
   end
 
   def show
-    @products = @category.products.includes(image_attachment: :blob)
+    @products = @category.products.includes(images_attachments: :blob)
   end
 
   private
