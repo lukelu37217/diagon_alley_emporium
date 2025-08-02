@@ -8,7 +8,7 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-md-8">
+    <div class="col-lg-8 col-md-12 order-2 order-lg-1">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="text-dark fw-bold">Featured Artifacts</h2>
         <%= link_to "View All", products_path, class: "btn btn-outline-primary" %>
@@ -37,13 +37,13 @@
       <% end %>
     </div>
     
-    <div class="col-md-4">
+    <div class="col-lg-4 col-md-12 order-1 order-lg-2 mb-4 mb-lg-0">
       <div class="mb-4">
         <h3 class="text-dark fw-bold mb-4">Magical Categories</h3>
         <div class="row g-3">
           <% @categories&.each do |category| %>
             <div class="col-12">
-              <%= link_to products_path(category_id: category.id), class: "text-decoration-none" do %>
+              <%= link_to category_path(category), class: "text-decoration-none" do %>
                 <div class="category-card p-3 h-100 text-center">
                   <h6 class="fw-semibold text-dark mb-0"><%= category.name %></h6>
                 </div>

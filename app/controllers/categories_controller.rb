@@ -12,6 +12,10 @@ class CategoriesController < ApplicationController
   private
 
   def set_category
-    @category = Category.find(params[:id])
+    if params[:id].match?(/\A\d+\z/)
+      @category = Category.find(params[:id])
+    else
+      @category = Category.find_by!(name: params[:id].humanize)
+    end
   end
 end
