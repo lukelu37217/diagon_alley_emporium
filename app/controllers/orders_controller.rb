@@ -14,7 +14,7 @@ class OrdersController < ApplicationController
     redirect_to shopping_carts_path, alert: 'Your cart is empty!' if @cart_items.empty?
     
     @order = Order.new
-    @total = @cart_items.sum { |item| item.quantity * item.product.price }
+    @total = @cart_items.sum { |item| item.quantity * item.product.current_price }
   end
 
   def create

@@ -11,7 +11,7 @@
           <div class="card-body">
             <div class="mb-3">
               <%= f.label :shipping_address, "Shipping Address", class: "form-label" %>
-              <%= f.text_area :shipping_address, class: "form-control", rows: 3, required: true %>
+              <%= f.text_area :shipping_address, class: "form-control", rows: 3, required: true, placeholder: "Enter your complete shipping address" %>
               <div class="invalid-feedback">
                 Please provide a shipping address.
               </div>
@@ -21,7 +21,7 @@
               <div class="col-md-6">
                 <div class="mb-3">
                   <%= f.label :city, "City", class: "form-label" %>
-                  <%= f.text_field :city, class: "form-control", required: true %>
+                  <%= f.text_field :city, class: "form-control", required: true, placeholder: "e.g., Toronto" %>
                   <div class="invalid-feedback">
                     Please provide a city.
                   </div>
@@ -30,7 +30,7 @@
               <div class="col-md-6">
                 <div class="mb-3">
                   <%= f.label :postal_code, "Postal Code", class: "form-label" %>
-                  <%= f.text_field :postal_code, class: "form-control", required: true, pattern: "[A-Za-z][0-9][A-Za-z] [0-9][A-Za-z][0-9]" %>
+                  <%= f.text_field :postal_code, class: "form-control", required: true, pattern: "[A-Za-z][0-9][A-Za-z] [0-9][A-Za-z][0-9]", placeholder: "e.g., M5V 3A8" %>
                   <div class="invalid-feedback">
                     Please provide a valid postal code (e.g., A1A 1A1).
                   </div>
@@ -65,7 +65,7 @@
             
             <div class="mb-3">
               <%= f.label :billing_address, "Billing Address", class: "form-label" %>
-              <%= f.text_area :billing_address, class: "form-control", rows: 3, required: true %>
+              <%= f.text_area :billing_address, class: "form-control", rows: 3, required: true, placeholder: "Enter your complete billing address" %>
               <div class="invalid-feedback">
                 Please provide a billing address.
               </div>
