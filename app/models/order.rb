@@ -26,7 +26,7 @@ class Order < ApplicationRecord
   scope :completed, -> { where(status: ['delivered', 'shipped']) }
 
   # Callbacks
-  before_create :generate_order_number, if: -> { order_number.blank? }
+  before_validation :generate_order_number, if: -> { order_number.blank? }
 
   def total_items
     order_items.sum(:quantity)

@@ -1,2 +1,198 @@
-<h1>Orders#show</h1>
-<p>Find me in app/views/orders/show.html.erb</p>
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-10">
+      <!-- Invoice Header -->
+      <div class="card shadow-lg mb-4">
+        <div class="card-header bg-primary text-white">
+          <div class="row align-items-center">
+            <div class="col-md-8">
+              <h2 class="mb-0"><i class="fas fa-receipt me-2"></i>Order Invoice</h2>
+              <small>Order #<%= @order.id %></small>
+            </div>
+            <div class="col-md-4 text-end">
+              <h5 class="mb-0">Diagon Alley Emporium</h5>
+              <small>Magical Supplies & More</small>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Order Details -->
+        <div class="card-body">
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <h5>Order Information</h5>
+              <p class="mb-1"><strong>Order Number:</strong> #<%= @order.id %></p>
+              <p class="mb-1"><strong>Order Date:</strong> <%= @order.created_at.strftime("%B %d, %Y") %></p>
+              <p class="mb-1"><strong>Status:</strong> 
+                <span class="badge bg-<%= @order.status == 'pending' ? 'warning' : @order.status == 'completed' ? 'success' : 'secondary' %>">
+                  <%= @order.status.capitalize %>
+                </span>
+              </p>
+              <p class="mb-1"><strong>Payment Method:</strong> <%= @order.payment_method&.capitalize || 'Credit Card' %></p>
+            </div>
+            
+            <div class="col-md-6">
+              <h5>Customer Information</h5>
+              <p class="mb-1"><strong>Customer:</strong> <%= @order.user.email %></p>
+              <% if @order.user.first_name.present? %>
+                <p class="mb-1"><strong>Name:</strong> <%= @order.user.first_name %> <%= @order.user.last_name %></p>
+              <% end %>
+            </div>
+          </div>
+          
+          <!-- Addresses -->
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <h5>Shipping Address</h5>
+              <% if @order.shipping_address %>
+                <address class="mb-0">
+                  <%= @order.shipping_address.street_address %><br>
+                  <%= @order.shipping_address.city %>, <%= @order.shipping_address.province %><br>
+                  <%= @order.shipping_address.postal_code %>
+                </address>
+              <% else %>
+                <p class="text-muted">No shipping address provided</p>
+              <% end %>
+            </div>
+            
+            <div class="col-md-6">
+              <h5>Billing Address</h5>
+              <% if @order.billing_address %>
+                <address class="mb-0">
+                  <%= @order.billing_address.street_address %><br>
+                  <%= @order.billing_address.city %>, <%= @order.billing_address.province %><br>
+                  <%= @order.billing_address.postal_code %>
+                </address>
+              <% else %>
+                <p class="text-muted">Same as shipping address</p>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Order Items -->
+      <div class="card shadow mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Order Items</h5>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Product</th>
+                  <th class="text-center">Quantity</th>
+                  <th class="text-end">Unit Price</th>
+                  <th class="text-end">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @order.order_items.includes(:product).each do |item| %>
+                  <tr>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <% if item.product.images.attached? %>
+                          <%= image_tag item.product.images.first, class: "me-3", style: "width: 50px; height: 50px; object-fit: cover;" %>
+                        <% end %>
+                        <div>
+                          <h6 class="mb-0"><%= item.product.name %></h6>
+                          <small class="text-muted"><%= item.product.category.name %></small>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      <span class="badge bg-light text-dark"><%= item.quantity %></span>
+                    </td>
+                    <td class="text-end">$<%= number_with_precision(item.unit_price, precision: 2) %></td>
+                    <td class="text-end font-weight-bold">$<%= number_with_precision(item.total_price, precision: 2) %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Order Summary -->
+      <div class="card shadow">
+        <div class="card-header">
+          <h5 class="mb-0">Order Summary</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-8"></div>
+            <div class="col-md-4">
+              <table class="table table-sm">
+                <tr>
+                  <td>Subtotal:</td>
+                  <td class="text-end">$<%= number_with_precision(@order.subtotal, precision: 2) %></td>
+                </tr>
+                
+                <!-- Tax Breakdown -->
+                <% if @order.gst > 0 %>
+                  <tr>
+                    <td>GST (5%):</td>
+                    <td class="text-end">$<%= number_with_precision(@order.gst, precision: 2) %></td>
+                  </tr>
+                <% end %>
+                
+                <% if @order.pst > 0 %>
+                  <tr>
+                    <td>PST 
+                      <% province = @order.shipping_address&.province || @order.billing_address&.province %>
+                      <% if province == 'BC' || province == 'SK' || province == 'MB' %>
+                        (7%):
+                      <% elsif province == 'QC' %>
+                        (9.975%):
+                      <% else %>
+                        :
+                      <% end %>
+                    </td>
+                    <td class="text-end">$<%= number_with_precision(@order.pst, precision: 2) %></td>
+                  </tr>
+                <% end %>
+                
+                <% if @order.hst > 0 %>
+                  <tr>
+                    <td>HST 
+                      <% province = @order.shipping_address&.province || @order.billing_address&.province %>
+                      <% if province == 'ON' %>
+                        (13%):
+                      <% elsif ['NB', 'NL', 'NS', 'PE'].include?(province) %>
+                        (15%):
+                      <% else %>
+                        :
+                      <% end %>
+                    </td>
+                    <td class="text-end">$<%= number_with_precision(@order.hst, precision: 2) %></td>
+                  </tr>
+                <% end %>
+                
+                <tr class="table-primary">
+                  <td><strong>Total:</strong></td>
+                  <td class="text-end"><strong>$<%= number_with_precision(@order.total_amount, precision: 2) %></strong></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div class="text-center mt-4 mb-5">
+        <%= link_to "← Back to Orders", orders_path, class: "btn btn-outline-secondary me-3" %>
+        <button onclick="window.print()" class="btn btn-primary">
+          <i class="fas fa-print me-2"></i>Print Invoice
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  @media print {
+    .btn, .card-header { display: none !important; }
+    .card { border: none !important; box-shadow: none !important; }
+  }
+</style>
