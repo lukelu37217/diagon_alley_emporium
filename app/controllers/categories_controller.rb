@@ -15,7 +15,7 @@ class CategoriesController < ApplicationController
     if params[:id].match?(/\A\d+\z/)
       @category = Category.find(params[:id])
     else
-      @category = Category.find_by!(name: params[:id].humanize)
+      @category = Category.find_by!(slug: params[:id]) || Category.find_by!(name: params[:id].humanize)
     end
   end
 end
