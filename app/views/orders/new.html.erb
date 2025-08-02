@@ -10,8 +10,8 @@
           </div>
           <div class="card-body">
             <div class="mb-3">
-              <%= f.label :shipping_address, "Shipping Address", class: "form-label" %>
-              <%= f.text_area :shipping_address, class: "form-control", rows: 3, required: true, placeholder: "Enter your complete shipping address" %>
+              <label for="order_shipping_address" class="form-label">Shipping Address</label>
+              <textarea name="order[shipping_address]" id="order_shipping_address" class="form-control" rows="3" required placeholder="Enter your complete shipping address"></textarea>
               <div class="invalid-feedback">
                 Please provide a shipping address.
               </div>
@@ -20,8 +20,8 @@
             <div class="row">
               <div class="col-md-6">
                 <div class="mb-3">
-                  <%= f.label :city, "City", class: "form-label" %>
-                  <%= f.text_field :city, class: "form-control", required: true, placeholder: "e.g., Toronto" %>
+                  <label for="order_city" class="form-label">City</label>
+                  <input type="text" name="order[city]" id="order_city" class="form-control" required placeholder="e.g., Toronto">
                   <div class="invalid-feedback">
                     Please provide a city.
                   </div>
@@ -29,8 +29,8 @@
               </div>
               <div class="col-md-6">
                 <div class="mb-3">
-                  <%= f.label :postal_code, "Postal Code", class: "form-label" %>
-                  <%= f.text_field :postal_code, class: "form-control", required: true, pattern: "[A-Za-z][0-9][A-Za-z] [0-9][A-Za-z][0-9]", placeholder: "e.g., M5V 3A8" %>
+                  <label for="order_postal_code" class="form-label">Postal Code</label>
+                  <input type="text" name="order[postal_code]" id="order_postal_code" class="form-control" required pattern="[A-Za-z][0-9][A-Za-z] [0-9][A-Za-z][0-9]" placeholder="e.g., M5V 3A8">
                   <div class="invalid-feedback">
                     Please provide a valid postal code (e.g., A1A 1A1).
                   </div>
@@ -64,8 +64,8 @@
             </div>
             
             <div class="mb-3">
-              <%= f.label :billing_address, "Billing Address", class: "form-label" %>
-              <%= f.text_area :billing_address, class: "form-control", rows: 3, required: true, placeholder: "Enter your complete billing address" %>
+              <label for="order_billing_address" class="form-label">Billing Address</label>
+              <textarea name="order[billing_address]" id="order_billing_address" class="form-control" rows="3" required placeholder="Enter your complete billing address"></textarea>
               <div class="invalid-feedback">
                 Please provide a billing address.
               </div>

@@ -15,6 +15,15 @@ class OrdersController < ApplicationController
     
     @order = Order.new
     @total = @cart_items.sum { |item| item.quantity * item.product.current_price }
+    
+    # Debug logging
+    Rails.logger.info "=== ORDER NEW DEBUG ==="
+    Rails.logger.info "Cart items count: #{@cart_items.count}"
+    @cart_items.each do |item|
+      Rails.logger.info "Item: #{item.product.name}, Qty: #{item.quantity}, Price: #{item.product.current_price}"
+    end
+    Rails.logger.info "Total calculated: #{@total}"
+    Rails.logger.info "======================="
   end
 
   def create
