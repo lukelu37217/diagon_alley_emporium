@@ -1,2 +1,82 @@
-<h1>Admin::Dashboard#index</h1>
-<p>Find me in app/views/admin/dashboard/index.html.erb</p>
+<div class="container mt-4">
+  <h1>Admin Dashboard</h1>
+  
+  <div class="row">
+    <div class="col-md-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title">Products</h5>
+          <h2 class="text-primary"><%= @products_count %></h2>
+          <%= link_to "Manage Products", admin_products_path, class: "btn btn-primary" %>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title">Categories</h5>
+          <h2 class="text-info"><%= @categories_count %></h2>
+          <%= link_to "Manage Categories", admin_categories_path, class: "btn btn-info" %>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title">Orders</h5>
+          <h2 class="text-success"><%= @orders_count %></h2>
+          <%= link_to "View Orders", orders_path, class: "btn btn-success" %>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title">Users</h5>
+          <h2 class="text-warning"><%= @users_count %></h2>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="row mt-4">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h5>Recent Orders</h5>
+        </div>
+        <div class="card-body">
+          <% if @recent_orders.any? %>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Order #</th>
+                  <th>Customer</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @recent_orders.each do |order| %>
+                  <tr>
+                    <td><%= link_to "##{order.id}", order_path(order) %></td>
+                    <td><%= order.user.email %></td>
+                    <td>$<%= order.total_amount %></td>
+                    <td><span class="badge bg-<%= order.status == 'completed' ? 'success' : 'warning' %>"><%= order.status.humanize %></span></td>
+                    <td><%= order.created_at.strftime("%B %d, %Y") %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          <% else %>
+            <p class="text-muted">No orders yet.</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
