@@ -132,15 +132,19 @@
       }
       
       .category-card {
-        border-radius: 12px;
-        overflow: hidden;
         transition: all 0.3s ease;
-        background: linear-gradient(135deg, rgba(107, 70, 193, 0.1), rgba(147, 51, 234, 0.1));
+        background: rgba(255, 255, 255, 0.8);
+        border-left: 4px solid transparent;
       }
       
       .category-card:hover {
-        transform: scale(1.05);
-        box-shadow: 0 10px 15px -3px rgba(107, 70, 193, 0.2);
+        background: linear-gradient(135deg, rgba(107, 70, 193, 0.1), rgba(147, 51, 234, 0.1));
+        border-left-color: var(--primary-purple);
+        transform: translateX(5px);
+      }
+      
+      .card-header.bg-primary {
+        background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple)) !important;
       }
       
       .footer {
@@ -172,7 +176,7 @@
             <% if current_user.admin? %>
               <%= link_to "Admin", admin_root_path, class: "nav-link" %>
             <% end %>
-            <%= link_to "Logout", destroy_user_session_path, method: :delete, data: { confirm: "Are you sure?" }, class: "nav-link" %>
+            <%= button_to "Logout", destroy_user_session_path, method: :delete, form: { style: "display: inline;" }, class: "nav-link btn btn-link p-0 border-0 text-white" %>
           <% else %>
             <%= link_to "Cart", shopping_carts_path, class: "nav-link" %>
             <%= link_to "Login", new_user_session_path, class: "nav-link" %>

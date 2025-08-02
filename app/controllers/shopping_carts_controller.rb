@@ -6,7 +6,18 @@ class ShoppingCartsController < ApplicationController
   end
 
   def create
-    redirect_to add_item_shopping_carts_path(product_id: params[:product_id])
+    @product = Product.find(params[:product_id])
+    @cart_item = current_user.shopping_carts.find_by(product: @product)
+    quantity = params[:quantity].to_i
+
+    if @cart_item
+      @cart_item.quantity += quantity
+      @cart_item.save
+    else
+      current_user.shopping_carts.create(product: @product, quantity: quantity)
+    end
+
+    redirect_to shopping_carts_path, notice: "#{@product.name} added to cart!"
   end
 
   def add_item
