@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  product: one
+  price: 9.99
+  effective_from: 2025-08-02 14:27:16
+  effective_to: 2025-08-02 14:27:16
+  reason: MyString
+
+two:
+  product: two
+  price: 9.99
+  effective_from: 2025-08-02 14:27:16
+  effective_to: 2025-08-02 14:27:16
+  reason: MyString
