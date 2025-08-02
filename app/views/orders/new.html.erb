@@ -17,6 +17,27 @@
               </div>
             </div>
             
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <%= f.label :city, "City", class: "form-label" %>
+                  <%= f.text_field :city, class: "form-control", required: true %>
+                  <div class="invalid-feedback">
+                    Please provide a city.
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <%= f.label :postal_code, "Postal Code", class: "form-label" %>
+                  <%= f.text_field :postal_code, class: "form-control", required: true, pattern: "[A-Za-z][0-9][A-Za-z] [0-9][A-Za-z][0-9]" %>
+                  <div class="invalid-feedback">
+                    Please provide a valid postal code (e.g., A1A 1A1).
+                  </div>
+                </div>
+              </div>
+            </div>
+            
             <div class="mb-3">
               <%= f.label :province, "Province/Territory", class: "form-label" %>
               <%= f.select :province, 
@@ -117,9 +138,12 @@
   document.getElementById('sameAsShipping').addEventListener('change', function() {
     const shippingAddress = document.getElementById('order_shipping_address');
     const billingAddress = document.getElementById('order_billing_address');
+    const shippingCity = document.getElementById('order_city');
+    const shippingPostalCode = document.getElementById('order_postal_code');
     
     if (this.checked) {
       billingAddress.value = shippingAddress.value;
+      // Note: In a real application, you might want separate billing city/postal fields
     } else {
       billingAddress.value = '';
     }

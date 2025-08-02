@@ -23,16 +23,20 @@ class OrdersController < ApplicationController
     ActiveRecord::Base.transaction do
       # Create shipping address
       shipping_address = current_user.addresses.create!(
-        address_line_1: params[:order][:shipping_address],
+        street_address: params[:order][:shipping_address],
         address_type: 'shipping',
-        province: params[:order][:province] || 'ON'
+        city: params[:order][:city] || 'Unknown',
+        province: params[:order][:province] || 'ON',
+        postal_code: params[:order][:postal_code] || 'A1A 1A1'
       )
       
       # Create billing address
       billing_address = current_user.addresses.create!(
-        address_line_1: params[:order][:billing_address],
+        street_address: params[:order][:billing_address],
         address_type: 'billing',
-        province: params[:order][:province] || 'ON'
+        city: params[:order][:city] || 'Unknown',
+        province: params[:order][:province] || 'ON',
+        postal_code: params[:order][:postal_code] || 'A1A 1A1'
       )
       
       # Calculate taxes based on province
