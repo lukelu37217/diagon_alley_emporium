@@ -103,9 +103,6 @@ class OrdersController < ApplicationController
       render :new
     end
   end
-  rescue ActiveRecord::RecordInvalid => e
-    redirect_to new_order_path, alert: 'Failed to place order. Please try again.'
-  end
 
   private
 
