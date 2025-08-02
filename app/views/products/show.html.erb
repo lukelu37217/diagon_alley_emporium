@@ -1,2 +1,65 @@
-<h1>Products#show</h1>
-<p>Find me in app/views/products/show.html.erb</p>
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-6">
+      <% if @product.image.attached? %>
+        <%= image_tag @product.image, class: "img-fluid", style: "max-height: 400px; object-fit: cover;" %>
+      <% else %>
+        <div class="bg-light d-flex align-items-center justify-content-center" style="height: 400px;">
+          <span class="text-muted h3">No Image Available</span>
+        </div>
+      <% end %>
+    </div>
+    
+    <div class="col-md-6">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><%= link_to "Home", root_path %></li>
+          <li class="breadcrumb-item"><%= link_to "Products", products_path %></li>
+          <li class="breadcrumb-item active"><%= @product.name %></li>
+        </ol>
+      </nav>
+      
+      <h1><%= @product.name %></h1>
+      <p class="h3 text-primary mb-3">$<%= @product.price %></p>
+      
+      <p class="lead"><%= @product.description %></p>
+      
+      <div class="mb-3">
+        <strong>Category:</strong> 
+        <%= link_to @product.category.name, category_path(@product.category), class: "badge bg-secondary text-decoration-none" %>
+      </div>
+      
+      <% if @product.stock_quantity > 0 %>
+        <div class="alert alert-success">
+          <strong><%= @product.stock_quantity %></strong> items in stock
+        </div>
+        
+        <% if user_signed_in? %>
+          <%= form_with url: shopping_cart_items_path, method: :post, local: true do |form| %>
+            <%= form.hidden_field :product_id, value: @product.id %>
+            <div class="row align-items-end">
+              <div class="col-md-3">
+                <%= form.number_field :quantity, value: 1, min: 1, max: @product.stock_quantity, class: "form-control" %>
+              </div>
+              <div class="col-md-6">
+                <%= form.submit "Add to Cart", class: "btn btn-primary btn-lg" %>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <p class="text-muted">
+            <%= link_to "Sign in", new_user_session_path %> to add items to your cart.
+          </p>
+        <% end %>
+      <% else %>
+        <div class="alert alert-danger">
+          <strong>Out of Stock</strong>
+        </div>
+      <% end %>
+      
+      <div class="mt-4">
+        <%= link_to "← Back to Products", products_path, class: "btn btn-outline-secondary" %>
+      </div>
+    </div>
+  </div>
+</div>
