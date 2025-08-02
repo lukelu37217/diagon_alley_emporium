@@ -1,8 +1,36 @@
 <div class="container mt-4">
+  <!-- Search Section -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <%= form_with url: products_path, method: :get, local: true, class: "row g-3" do |f| %>
+        <div class="col-md-5">
+          <%= f.text_field :search, placeholder: "Search products by name or description...", 
+              value: params[:search], class: "form-control" %>
+        </div>
+        <div class="col-md-4">
+          <%= f.select :category_id, 
+              options_from_collection_for_select(@categories, :id, :name, params[:category_id]), 
+              { prompt: "All Categories" }, 
+              { class: "form-select" } %>
+        </div>
+        <div class="col-md-3">
+          <%= f.submit "Search", class: "btn btn-primary me-2" %>
+          <%= link_to "Clear", products_path, class: "btn btn-outline-secondary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
   <div class="row">
     <div class="col-md-9">
       <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>All Products</h1>
+        <h1>
+          <% if params[:search].present? || params[:category_id].present? %>
+            Search Results
+          <% else %>
+            All Products
+          <% end %>
+        </h1>
         <p class="text-muted"><%= @products.count %> products found</p>
       </div>
       

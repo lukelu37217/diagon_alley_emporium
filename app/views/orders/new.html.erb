@@ -18,6 +18,31 @@
             </div>
             
             <div class="mb-3">
+              <%= f.label :province, "Province/Territory", class: "form-label" %>
+              <%= f.select :province, 
+                  options_for_select([
+                    ['Alberta', 'AB'],
+                    ['British Columbia', 'BC'],
+                    ['Manitoba', 'MB'],
+                    ['New Brunswick', 'NB'],
+                    ['Newfoundland and Labrador', 'NL'],
+                    ['Northwest Territories', 'NT'],
+                    ['Nova Scotia', 'NS'],
+                    ['Nunavut', 'NU'],
+                    ['Ontario', 'ON'],
+                    ['Prince Edward Island', 'PE'],
+                    ['Quebec', 'QC'],
+                    ['Saskatchewan', 'SK'],
+                    ['Yukon', 'YT']
+                  ], 'ON'), 
+                  { prompt: "Select Province/Territory" }, 
+                  { class: "form-select", required: true, id: "province_select" } %>
+              <div class="invalid-feedback">
+                Please select your province/territory.
+              </div>
+            </div>
+            
+            <div class="mb-3">
               <%= f.label :billing_address, "Billing Address", class: "form-label" %>
               <%= f.text_area :billing_address, class: "form-control", rows: 3, required: true %>
               <div class="invalid-feedback">

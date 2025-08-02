@@ -21,15 +21,41 @@ class OrdersController < ApplicationController
     @cart_items = current_user.shopping_carts.includes(:product)
     
     ActiveRecord::Base.transaction do
-      @order = current_user.orders.build(order_params)
-      @order.total_amount = @cart_items.sum { |item| item.quantity * item.product.price }
+      # Create shipping address
+      shipping_address = current_user.addresses.create!(
+        address_line_1: params[:order][:shipping_address],
+        address_type: 'shipping',
+        province: params[:order][:province] || 'ON'
+      )
+      
+      # Create billing address
+      billing_address = current_user.addresses.create!(
+        address_line_1: params[:order][:billing_address],
+        address_type: 'billing',
+        province: params[:order][:province] || 'ON'
+      )
+      
+      # Calculate taxes based on province
+      subtotal = @cart_items.sum { |item| item.quantity * item.product.current_price }
+      tax_data = calculate_taxes(subtotal, params[:order][:province] || 'ON')
+      
+      @order = current_user.orders.build(
+        shipping_address: shipping_address,
+        billing_address: billing_address,
+        payment_method: params[:order][:payment_method],
+        subtotal: subtotal,
+        gst: tax_data[:gst],
+        pst: tax_data[:pst],
+        hst: tax_data[:hst],
+        total_amount: subtotal + tax_data[:total_tax]
+      )
       
       if @order.save
         @cart_items.each do |cart_item|
           @order.order_items.create!(
             product: cart_item.product,
             quantity: cart_item.quantity,
-            price: cart_item.product.price
+            price: cart_item.product.current_price
           )
         end
         
@@ -50,6 +76,39 @@ class OrdersController < ApplicationController
   end
 
   def order_params
-    params.require(:order).permit(:shipping_address, :billing_address, :payment_method)
+    params.require(:order).permit(:shipping_address, :billing_address, :payment_method, :province)
+  end
+  
+  def calculate_taxes(subtotal, province)
+    gst = 0
+    pst = 0
+    hst = 0
+    
+    case province.upcase
+    when 'ON' # Ontario
+      hst = subtotal * 0.13
+    when 'BC', 'SK' # British Columbia, Saskatchewan
+      gst = subtotal * 0.05
+      pst = subtotal * 0.07
+    when 'MB' # Manitoba
+      gst = subtotal * 0.05
+      pst = subtotal * 0.07
+    when 'QC' # Quebec
+      gst = subtotal * 0.05
+      pst = subtotal * 0.09975
+    when 'AB', 'NT', 'NU', 'YT' # Alberta, Northwest Territories, Nunavut, Yukon
+      gst = subtotal * 0.05
+    when 'NB', 'NL', 'NS', 'PE' # New Brunswick, Newfoundland, Nova Scotia, Prince Edward Island
+      hst = subtotal * 0.15
+    else
+      gst = subtotal * 0.05 # Default GST
+    end
+    
+    {
+      gst: gst.round(2),
+      pst: pst.round(2), 
+      hst: hst.round(2),
+      total_tax: (gst + pst + hst).round(2)
+    }
   end
 end
