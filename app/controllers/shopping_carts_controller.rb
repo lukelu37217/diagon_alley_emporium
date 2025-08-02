@@ -42,6 +42,6 @@ class ShoppingCartsController < ApplicationController
   private
 
   def set_cart
-    @cart = current_user.shopping_cart || current_user.create_shopping_cart
+    @cart = current_user.current_cart
   end
 end

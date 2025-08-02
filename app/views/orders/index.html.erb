@@ -1,2 +1,64 @@
-<h1>Orders#index</h1>
-<p>Find me in app/views/orders/index.html.erb</p>
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-dark">My Orders</h1>
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><%= link_to "Home", root_path %></li>
+            <li class="breadcrumb-item active" aria-current="page">Orders</li>
+          </ol>
+        </nav>
+      </div>
+
+      <% if @orders&.any? %>
+        <div class="row">
+          <% @orders.each do |order| %>
+            <div class="col-12 mb-4">
+              <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col-md-2">
+                      <h6 class="text-muted mb-1">Order #</h6>
+                      <strong><%= order.id %></strong>
+                    </div>
+                    <div class="col-md-2">
+                      <h6 class="text-muted mb-1">Date</h6>
+                      <span><%= order.created_at.strftime("%B %d, %Y") %></span>
+                    </div>
+                    <div class="col-md-2">
+                      <h6 class="text-muted mb-1">Status</h6>
+                      <span class="badge bg-secondary">
+                        <%= order.status&.titleize || 'Pending' %>
+                      </span>
+                    </div>
+                    <div class="col-md-2">
+                      <h6 class="text-muted mb-1">Total</h6>
+                      <strong class="text-primary">$<%= order.total_amount || 0 %></strong>
+                    </div>
+                    <div class="col-md-2">
+                      <h6 class="text-muted mb-1">Items</h6>
+                      <span><%= order.order_items&.count || 0 %> items</span>
+                    </div>
+                    <div class="col-md-2">
+                      <%= link_to "View Details", order_path(order), class: "btn btn-outline-dark btn-sm" %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="text-center py-5">
+          <div class="mb-4">
+            <i class="fas fa-scroll fa-5x text-muted"></i>
+          </div>
+          <h3 class="text-muted">No Orders Yet</h3>
+          <p class="text-muted mb-4">You haven't placed any orders yet. Start exploring our magical collection!</p>
+          <%= link_to "Browse Products", products_path, class: "btn btn-dark btn-lg" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
