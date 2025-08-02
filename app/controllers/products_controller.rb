@@ -2,7 +2,6 @@ class ProductsController < ApplicationController
   before_action :set_product, only: [:show]
 
   def index
-    def index
     @categories = Category.where(is_active: true)
     @products = Product.where(is_active: true).includes(:category, images_attachments: :blob)
     
@@ -19,10 +18,6 @@ class ProductsController < ApplicationController
     if params[:category_id].present?
       @products = @products.where(category_id: params[:category_id])
     end
-    
-    @products = @products.page(params[:page])
-  end
-    @categories = Category.all
   end
 
   def show

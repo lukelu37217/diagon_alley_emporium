@@ -4,7 +4,7 @@ class Admin::ProductsController < ApplicationController
   before_action :set_product, only: [:show, :edit, :update, :destroy, :toggle_status]
 
   def index
-    @products = Product.includes(:category, images_attachments: :blob).page(params[:page])
+    @products = Product.includes(:category, images_attachments: :blob)
   end
 
   def show
