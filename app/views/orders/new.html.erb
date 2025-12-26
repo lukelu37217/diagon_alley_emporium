@@ -3,7 +3,7 @@
   
   <div class="row">
     <div class="col-md-8">
-      <%= form_with model: @order, local: true, class: "needs-validation", novalidate: true do |f| %>
+      <%= form_with model: @order, local: true, class: "needs-validation", novalidate: true, data: { turbo: false } do |f| %>
         <div class="card mb-4">
           <div class="card-header">
             <h5>Shipping Information</h5>
@@ -101,7 +101,8 @@
         </div>
         
         <div class="d-grid gap-2">
-          <%= f.submit "Place Order", class: "btn btn-primary btn-lg" %>
+          <%= f.submit "Place Order", class: "btn btn-primary btn-lg", id: "place-order-btn", 
+              data: { disable_with: "Processing Order..." } %>
           <%= link_to "Back to Cart", shopping_carts_path, class: "btn btn-outline-secondary" %>
         </div>
       <% end %>
@@ -119,13 +120,39 @@
                 <span><%= item.product.name %></span>
                 <small class="text-muted"> x <%= item.quantity %></small>
               </div>
-              <span>$<%= (item.product.current_price * item.quantity).to_f %></span>
+              <span>$<%= number_with_precision(item.product.current_price * item.quantity, precision: 2) %></span>
             </div>
           <% end %>
           
           <hr>
+          
+          <!-- Tax Calculation Preview -->
+          <div id="tax-breakdown" style="display: none;">
+            <div class="d-flex justify-content-between">
+              <span>Subtotal:</span>
+              <span id="subtotal-amount">$<%= number_with_precision(@total, precision: 2) %></span>
+            </div>
+            
+            <div id="gst-line" class="d-flex justify-content-between" style="display: none;">
+              <span>GST (<span id="gst-rate">5</span>%):</span>
+              <span id="gst-amount">$0.00</span>
+            </div>
+            
+            <div id="pst-line" class="d-flex justify-content-between" style="display: none;">
+              <span>PST (<span id="pst-rate">7</span>%):</span>
+              <span id="pst-amount">$0.00</span>
+            </div>
+            
+            <div id="hst-line" class="d-flex justify-content-between" style="display: none;">
+              <span>HST (<span id="hst-rate">13</span>%):</span>
+              <span id="hst-amount">$0.00</span>
+            </div>
+            
+            <hr>
+          </div>
+          
           <div class="d-flex justify-content-between">
-            <strong>Total: $<%= @total.to_f %></strong>
+            <strong>Total: <span id="total-amount">$<%= number_with_precision(@total, precision: 2) %></span></strong>
           </div>
         </div>
       </div>
@@ -134,16 +161,110 @@
 </div>
 
 <script>
+  const subtotal = <%= @total %>;
+  
+  // Tax calculation function
+  function calculateTaxes(province) {
+    let gst = 0, pst = 0, hst = 0;
+    let gstRate = 0, pstRate = 0, hstRate = 0;
+    
+    switch(province) {
+      case 'ON': // Ontario
+        hst = subtotal * 0.13;
+        hstRate = 13;
+        break;
+      case 'BC':
+      case 'SK': // British Columbia, Saskatchewan
+        gst = subtotal * 0.05;
+        pst = subtotal * 0.07;
+        gstRate = 5;
+        pstRate = 7;
+        break;
+      case 'MB': // Manitoba
+        gst = subtotal * 0.05;
+        pst = subtotal * 0.07;
+        gstRate = 5;
+        pstRate = 7;
+        break;
+      case 'QC': // Quebec
+        gst = subtotal * 0.05;
+        pst = subtotal * 0.09975;
+        gstRate = 5;
+        pstRate = 9.975;
+        break;
+      case 'AB':
+      case 'NT':
+      case 'NU':
+      case 'YT': // Alberta, Northwest Territories, Nunavut, Yukon
+        gst = subtotal * 0.05;
+        gstRate = 5;
+        break;
+      case 'NB':
+      case 'NL':
+      case 'NS':
+      case 'PE': // New Brunswick, Newfoundland, Nova Scotia, Prince Edward Island
+        hst = subtotal * 0.15;
+        hstRate = 15;
+        break;
+      default:
+        gst = subtotal * 0.05;
+        gstRate = 5;
+    }
+    
+    return {
+      gst: gst,
+      pst: pst,
+      hst: hst,
+      gstRate: gstRate,
+      pstRate: pstRate,
+      hstRate: hstRate,
+      totalTax: gst + pst + hst,
+      grandTotal: subtotal + gst + pst + hst
+    };
+  }
+  
+  // Update tax display
+  function updateTaxDisplay(province) {
+    const taxes = calculateTaxes(province);
+    const taxBreakdown = document.getElementById('tax-breakdown');
+    const gstLine = document.getElementById('gst-line');
+    const pstLine = document.getElementById('pst-line');
+    const hstLine = document.getElementById('hst-line');
+    
+    // Show tax breakdown
+    taxBreakdown.style.display = 'block';
+    
+    // Update amounts
+    document.getElementById('gst-amount').textContent = '$' + taxes.gst.toFixed(2);
+    document.getElementById('pst-amount').textContent = '$' + taxes.pst.toFixed(2);
+    document.getElementById('hst-amount').textContent = '$' + taxes.hst.toFixed(2);
+    document.getElementById('total-amount').textContent = '$' + taxes.grandTotal.toFixed(2);
+    
+    // Update rates
+    document.getElementById('gst-rate').textContent = taxes.gstRate;
+    document.getElementById('pst-rate').textContent = taxes.pstRate;
+    document.getElementById('hst-rate').textContent = taxes.hstRate;
+    
+    // Show/hide appropriate tax lines
+    gstLine.style.display = taxes.gst > 0 ? 'flex' : 'none';
+    pstLine.style.display = taxes.pst > 0 ? 'flex' : 'none';
+    hstLine.style.display = taxes.hst > 0 ? 'flex' : 'none';
+  }
+  
+  // Province change handler
+  document.getElementById('province_select').addEventListener('change', function() {
+    if (this.value) {
+      updateTaxDisplay(this.value);
+    }
+  });
+  
   // Copy shipping address to billing address
   document.getElementById('sameAsShipping').addEventListener('change', function() {
     const shippingAddress = document.getElementById('order_shipping_address');
     const billingAddress = document.getElementById('order_billing_address');
-    const shippingCity = document.getElementById('order_city');
-    const shippingPostalCode = document.getElementById('order_postal_code');
     
     if (this.checked) {
       billingAddress.value = shippingAddress.value;
-      // Note: In a real application, you might want separate billing city/postal fields
     } else {
       billingAddress.value = '';
     }
@@ -156,13 +277,29 @@
       var forms = document.getElementsByClassName('needs-validation');
       var validation = Array.prototype.filter.call(forms, function(form) {
         form.addEventListener('submit', function(event) {
+          console.log('Form submit event triggered');
+          console.log('Form validity:', form.checkValidity());
+          
           if (form.checkValidity() === false) {
+            console.log('Form validation failed');
             event.preventDefault();
             event.stopPropagation();
+          } else {
+            console.log('Form validation passed, submitting...');
           }
           form.classList.add('was-validated');
         }, false);
       });
     }, false);
   })();
+  
+  // Initialize tax display with Ontario as default
+  document.addEventListener('DOMContentLoaded', function() {
+    const provinceSelect = document.getElementById('province_select');
+    if (provinceSelect.value) {
+      updateTaxDisplay(provinceSelect.value);
+    } else {
+      updateTaxDisplay('ON'); // Default to Ontario
+    }
+  });
 </script>
